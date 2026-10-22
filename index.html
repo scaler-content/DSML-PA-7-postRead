@@ -1,0 +1,1053 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guesstimates II – Case Study</title>
+<style>
+  :root {
+    --primary: #6366F1;
+    --primary-dark: #4F46E5;
+    --primary-light: #EEF2FF;
+    --surface: #FFFFFF;
+    --surface-2: #F8FAFC;
+    --surface-3: #F1F5F9;
+    --border: #E2E8F0;
+    --text: #0F172A;
+    --text-2: #475569;
+    --text-3: #94A3B8;
+    --green: #10B981;
+    --green-bg: #ECFDF5;
+    --amber: #F59E0B;
+    --amber-bg: #FFFBEB;
+    --red: #EF4444;
+    --red-bg: #FEF2F2;
+    --blue: #3B82F6;
+    --blue-bg: #EFF6FF;
+    --purple: #8B5CF6;
+    --purple-bg: #F5F3FF;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+    --shadow-md: 0 4px 12px rgba(0,0,0,.1);
+    --transition: all .2s ease;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--text);
+    background: var(--surface-2);
+  }
+
+  /* NAV */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(255,255,255,.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 clamp(1rem, 4vw, 3rem);
+  }
+  .nav-inner {
+    max-width: 1440px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    height: 56px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .nav-inner::-webkit-scrollbar { display: none; }
+  .nav-logo {
+    font-weight: 700;
+    font-size: .9rem;
+    color: var(--primary);
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+  }
+  .nav-logo span { font-size: 1.1rem; }
+  .nav-links {
+    display: flex;
+    gap: .25rem;
+    list-style: none;
+    flex-shrink: 0;
+  }
+  .nav-links a {
+    display: block;
+    padding: .35rem .75rem;
+    border-radius: 20px;
+    font-size: .82rem;
+    font-weight: 500;
+    color: var(--text-2);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: var(--transition);
+  }
+  .nav-links a:hover, .nav-links a.active {
+    color: var(--primary);
+    background: var(--primary-light);
+  }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #A78BFA 100%);
+    color: white;
+    padding: clamp(2rem, 6vw, 5rem) clamp(1rem, 4vw, 3rem);
+  }
+  .hero-inner {
+    max-width: 1440px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 2rem;
+    align-items: center;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    background: rgba(255,255,255,.2);
+    border: 1px solid rgba(255,255,255,.3);
+    border-radius: 20px;
+    padding: .3rem .8rem;
+    font-size: .8rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .hero h1 { font-size: clamp(1.6rem, 4vw, 2.8rem); font-weight: 800; line-height: 1.2; margin-bottom: .5rem; }
+  .hero p { font-size: 1.05rem; opacity: .9; max-width: 680px; }
+  .hero-meta {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .hero-meta-item { display: flex; align-items: center; gap: .4rem; font-size: .9rem; opacity: .85; }
+  .hero-stat {
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.25);
+    border-radius: var(--radius);
+    padding: 1.25rem 1.5rem;
+    text-align: center;
+    min-width: 140px;
+  }
+  .hero-stat .num { font-size: 2rem; font-weight: 800; }
+  .hero-stat .label { font-size: .8rem; opacity: .8; margin-top: .2rem; }
+
+  /* MAIN LAYOUT */
+  .page-wrap {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: clamp(1.5rem, 4vw, 3rem) clamp(1rem, 4vw, 3rem);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  /* SECTION */
+  section { scroll-margin-top: 72px; }
+  .section-label {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    background: var(--primary-light);
+    color: var(--primary);
+    border-radius: 20px;
+    padding: .3rem .85rem;
+    font-size: .78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    margin-bottom: 1rem;
+  }
+  .section-title { font-size: clamp(1.3rem, 2.5vw, 1.9rem); font-weight: 800; color: var(--text); margin-bottom: .4rem; }
+  .section-sub { color: var(--text-2); font-size: 1rem; margin-bottom: 1.5rem; }
+
+  /* CARD */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: clamp(1.2rem, 3vw, 2rem);
+    box-shadow: var(--shadow);
+  }
+  .card + .card { margin-top: 1rem; }
+
+  /* STORY CARD */
+  .story-card {
+    background: linear-gradient(135deg, var(--primary-light), #F5F3FF);
+    border: 1px solid rgba(99,102,241,.2);
+    border-radius: var(--radius);
+    padding: clamp(1.2rem, 3vw, 2rem);
+    position: relative;
+    overflow: hidden;
+  }
+  .story-card::before {
+    content: '"';
+    position: absolute;
+    top: -10px;
+    left: 16px;
+    font-size: 8rem;
+    color: var(--primary);
+    opacity: .1;
+    font-family: Georgia, serif;
+    line-height: 1;
+  }
+  .story-card p { position: relative; z-index: 1; color: var(--text); font-style: italic; }
+  .story-card strong { font-style: normal; color: var(--primary-dark); }
+
+  /* INTERVIEW SIMULATION */
+  .interview-frame {
+    background: #1e1e2e;
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+  }
+  .interview-header {
+    background: #2d2d44;
+    padding: .75rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+  }
+  .dots { display: flex; gap: .4rem; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-r { background: #FF5F57; }
+  .dot-y { background: #FFBD2E; }
+  .dot-g { background: #28C840; }
+  .interview-title { color: rgba(255,255,255,.7); font-size: .8rem; font-family: monospace; }
+  .interview-body { padding: 1.5rem; }
+  .qa-item { margin-bottom: 1.25rem; }
+  .qa-q { color: #89B4FA; font-size: .88rem; font-family: monospace; margin-bottom: .35rem; }
+  .qa-a { color: #CDD6F4; font-size: .88rem; font-family: monospace; }
+  .qa-tag {
+    display: inline-block;
+    background: rgba(137,180,250,.15);
+    color: #89B4FA;
+    border-radius: 4px;
+    padding: .1rem .4rem;
+    font-size: .75rem;
+    margin-right: .4rem;
+  }
+
+  /* FORMULA BOX */
+  .formula-box {
+    background: linear-gradient(135deg, #0F172A, #1E293B);
+    color: white;
+    border-radius: var(--radius);
+    padding: 1.5rem 2rem;
+    text-align: center;
+    font-family: 'Courier New', monospace;
+    font-size: clamp(1rem, 2.5vw, 1.4rem);
+    font-weight: 700;
+    letter-spacing: .02em;
+    box-shadow: var(--shadow-md);
+    margin: 1rem 0;
+  }
+  .formula-box .sub { font-size: .85rem; font-weight: 400; color: rgba(255,255,255,.6); margin-top: .4rem; font-family: inherit; }
+
+  /* STEP FLOW */
+  .steps-flow {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+  .step-card {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem 1rem;
+    text-align: center;
+    transition: var(--transition);
+    position: relative;
+  }
+  .step-card:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+  .step-number {
+    width: 36px;
+    height: 36px;
+    background: var(--primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .85rem;
+    font-weight: 700;
+    margin: 0 auto .75rem;
+  }
+  .step-card h4 { font-size: .9rem; font-weight: 700; color: var(--text); margin-bottom: .3rem; }
+  .step-card p { font-size: .8rem; color: var(--text-2); }
+
+  /* TREE */
+  .tree-container {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2rem;
+    overflow-x: auto;
+  }
+  .tree-node {
+    background: var(--primary);
+    color: white;
+    border-radius: var(--radius-sm);
+    padding: .6rem 1.2rem;
+    font-size: .85rem;
+    font-weight: 600;
+    text-align: center;
+    display: inline-block;
+    white-space: nowrap;
+  }
+  .tree-node.level2 { background: var(--blue); }
+  .tree-node.level3 { background: var(--purple); }
+  .tree-node.leaf { background: var(--green); font-size: .78rem; }
+  .tree-level { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; margin: .75rem 0; }
+  .tree-connector { text-align: center; color: var(--text-3); font-size: .8rem; margin: .3rem 0; }
+
+  /* CALC TABLE */
+  .calc-table { width: 100%; border-collapse: collapse; }
+  .calc-table th {
+    background: var(--primary);
+    color: white;
+    padding: .75rem 1rem;
+    text-align: left;
+    font-size: .85rem;
+  }
+  .calc-table td {
+    padding: .7rem 1rem;
+    border-bottom: 1px solid var(--border);
+    font-size: .9rem;
+    vertical-align: top;
+  }
+  .calc-table tr:nth-child(even) td { background: var(--surface-2); }
+  .calc-table .value { font-weight: 700; color: var(--primary-dark); font-family: monospace; }
+  .calc-table .result-row td { background: var(--primary-light) !important; font-weight: 700; color: var(--primary-dark); border-top: 2px solid var(--primary); }
+
+  /* SANITY CHECK */
+  .sanity-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+  .sanity-card {
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    text-align: center;
+  }
+  .sanity-card.estimate { background: var(--amber-bg); border: 2px solid var(--amber); }
+  .sanity-card.actual { background: var(--green-bg); border: 2px solid var(--green); }
+  .sanity-card.revised { background: var(--blue-bg); border: 2px solid var(--blue); }
+  .sanity-card .amount { font-size: 1.6rem; font-weight: 800; }
+  .sanity-card .label { font-size: .8rem; color: var(--text-2); margin-top: .25rem; }
+  .sanity-card.estimate .amount { color: var(--amber); }
+  .sanity-card.actual .amount { color: var(--green); }
+  .sanity-card.revised .amount { color: var(--blue); }
+
+  /* REAL WORLD BOX */
+  .rw-box {
+    background: var(--green-bg);
+    border-left: 4px solid var(--green);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    padding: 1rem 1.25rem;
+    margin: 1rem 0;
+  }
+  .rw-box strong { color: var(--green); display: block; margin-bottom: .3rem; font-size: .8rem; text-transform: uppercase; letter-spacing: .05em; }
+
+  /* QUIZ */
+  .quiz-block {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin: 1rem 0;
+  }
+  .quiz-header {
+    background: var(--primary);
+    color: white;
+    padding: .85rem 1.25rem;
+    font-weight: 700;
+    font-size: .9rem;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+  .quiz-body { padding: 1.25rem; }
+  .quiz-q { font-weight: 600; margin-bottom: 1rem; color: var(--text); }
+  .quiz-options { display: flex; flex-direction: column; gap: .5rem; margin-bottom: 1rem; }
+  .quiz-option {
+    display: flex;
+    align-items: flex-start;
+    gap: .75rem;
+    padding: .8rem 1rem;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: var(--transition);
+    background: var(--surface);
+    text-align: left;
+    width: 100%;
+    font-size: .9rem;
+  }
+  .quiz-option:hover { border-color: var(--primary); background: var(--primary-light); }
+  .quiz-option.correct { border-color: var(--green); background: var(--green-bg); }
+  .quiz-option.wrong { border-color: var(--red); background: var(--red-bg); }
+  .quiz-option.revealed { border-color: var(--green); background: var(--green-bg); }
+  .option-letter {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: .8rem;
+    flex-shrink: 0;
+    color: var(--text-2);
+  }
+  .quiz-option.correct .option-letter { background: var(--green); color: white; }
+  .quiz-option.wrong .option-letter { background: var(--red); color: white; }
+  .quiz-option.revealed .option-letter { background: var(--green); color: white; }
+  .quiz-explain {
+    display: none;
+    background: var(--surface-2);
+    border-radius: var(--radius-sm);
+    padding: 1rem;
+    font-size: .88rem;
+    color: var(--text-2);
+    line-height: 1.6;
+    border-left: 3px solid var(--green);
+  }
+  .quiz-explain.show { display: block; }
+  .quiz-explain strong { color: var(--text); }
+
+  /* CALLOUT */
+  .callout {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    border-radius: var(--radius-sm);
+    margin: 1rem 0;
+  }
+  .callout.info { background: var(--blue-bg); border-left: 4px solid var(--blue); }
+  .callout.warn { background: var(--amber-bg); border-left: 4px solid var(--amber); }
+  .callout.tip { background: var(--purple-bg); border-left: 4px solid var(--purple); }
+  .callout-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: .1rem; }
+  .callout-body { font-size: .9rem; line-height: 1.6; color: var(--text); }
+
+  /* REVISION CARD */
+  .revision-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+    margin: 1rem 0;
+  }
+  .revision-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+  }
+  .revision-item h4 { font-size: .9rem; font-weight: 700; color: var(--primary); margin-bottom: .5rem; }
+  .revision-item p { font-size: .88rem; color: var(--text-2); line-height: 1.6; }
+
+  /* CHEAT SHEET */
+  .cheat-sheet {
+    background: #1e1e2e;
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    color: #CDD6F4;
+    font-family: 'Courier New', monospace;
+    font-size: .85rem;
+    line-height: 1.8;
+    overflow-x: auto;
+  }
+  .cheat-sheet .comment { color: #6C7086; }
+  .cheat-sheet .highlight { color: #89B4FA; font-weight: 700; }
+  .cheat-sheet .value { color: #A6E3A1; }
+  .cheat-sheet .formula { color: #FAB387; }
+
+  /* METRIC TAG */
+  .tag {
+    display: inline-block;
+    padding: .2rem .6rem;
+    border-radius: 4px;
+    font-size: .75rem;
+    font-weight: 600;
+    margin: .15rem;
+  }
+  .tag-green { background: var(--green-bg); color: var(--green); }
+  .tag-amber { background: var(--amber-bg); color: var(--amber); }
+  .tag-blue { background: var(--blue-bg); color: var(--blue); }
+  .tag-purple { background: var(--purple-bg); color: var(--purple); }
+  .tag-red { background: var(--red-bg); color: var(--red); }
+
+  /* IMG */
+  figure { margin: 1rem 0; }
+  figure img { max-width: 100%; border-radius: var(--radius-sm); display: block; }
+  figcaption { font-size: .78rem; color: var(--text-3); margin-top: .4rem; text-align: center; }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    .hero-inner { grid-template-columns: 1fr; }
+    .hero-stat { display: none; }
+    .steps-flow { grid-template-columns: repeat(2, 1fr); }
+    .sanity-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo"><span>🎯</span> Guesstimates II</div>
+    <ul class="nav-links">
+      <li><a href="#scene">Scene</a></li>
+      <li><a href="#adsense">AdSense</a></li>
+      <li><a href="#terms">Terminology</a></li>
+      <li><a href="#framework">6-Step Framework</a></li>
+      <li><a href="#clarify">Clarify</a></li>
+      <li><a href="#estimation">Estimation Tree</a></li>
+      <li><a href="#calc">Calculation</a></li>
+      <li><a href="#sanity">Sanity Check</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-badge">📘 Lecture 7 · Product Analytics</div>
+      <h1>Guesstimates II – Case Study</h1>
+      <p>A live BCG interview simulation. Estimate Google AdSense revenue end-to-end — from a blank page to a $16 billion corrected answer, using a formal 6-step framework, an Estimation Tree, and a sanity check against Alphabet's 10K filing.</p>
+      <div class="hero-meta">
+        <span class="hero-meta-item">🏢 BCG Interview Case</span>
+        <span class="hero-meta-item">💰 Google AdSense Revenue</span>
+        <span class="hero-meta-item">🌳 Estimation Tree</span>
+        <span class="hero-meta-item">📊 4 Interactive Quizzes</span>
+      </div>
+    </div>
+    <div class="hero-stat">
+      <div class="num">$16B</div>
+      <div class="label">Final revised estimate</div>
+    </div>
+  </div>
+</header>
+
+<div class="page-wrap">
+
+  <!-- CONTEXT -->
+  <section id="scene">
+    <div class="section-label">🎬 Setting the Scene</div>
+    <div class="story-card">
+      <p><strong>Aditi gets the email on a Tuesday morning:</strong> "Congratulations — you have been shortlisted for the Product Analyst role at BCG."<br><br>
+      There is no query she can run for this. No table to SELECT from. No historical data to pivot off. She recalls what she learned in Script 6: <em>"Break it down. Ask clarifying questions. State your assumptions clearly. Build the estimation tree. Work bottom-up. Sanity-check at the end."</em><br><br>
+      She opens a fresh Google Doc, writes the master formula at the top, and starts. This is the session where we follow her — step by step — all the way to a $3.6 billion answer, and then watch her correct it to $16 billion in the sanity check.</p>
+    </div>
+
+    <div style="margin-top:1.5rem;" class="card">
+      <h3 style="font-weight:700;margin-bottom:.75rem;">📋 The BCG Assignment</h3>
+      <p style="color:var(--text-2);margin-bottom:1rem;">Boston Consulting Group (BCG) partners with leading businesses to hire talented professionals. For a recent project, they have opened positions for Product Analysts. You have received an assignment:</p>
+      <div class="formula-box" style="font-size:1.1rem;">
+        Estimate the AdSense revenue for websites.<br>
+        <span class="sub">Discuss what approach you would take to solve this problem.</span>
+      </div>
+      <div class="callout info" style="margin-top:1rem;">
+        <div class="callout-icon">💡</div>
+        <div class="callout-body"><strong>What BCG is actually testing:</strong> (1) How structured is your approach? (2) How comfortable are you with estimating numbers? (3) Can you do back-of-the-mind calculations and validate them?</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ADSENSE -->
+  <section id="adsense">
+    <div class="section-label">📡 What is AdSense?</div>
+    <div class="section-title">Google AdSense — Explained</div>
+    <div class="section-sub">Before estimating revenue, understand the product you're estimating.</div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.25rem;">
+      <div class="card">
+        <div style="font-size:2rem;margin-bottom:.75rem;">📰</div>
+        <h3 style="font-weight:700;margin-bottom:.5rem;">What is AdSense?</h3>
+        <p style="color:var(--text-2);font-size:.9rem;">AdSense is a free, simple way for website publishers to earn money by displaying ads next to their online content. Google places targeted ads — relevant to content or user searches — on the publisher's pages.</p>
+      </div>
+      <div class="card">
+        <div style="font-size:2rem;margin-bottom:.75rem;">⚙️</div>
+        <h3 style="font-weight:700;margin-bottom:.5rem;">How Does It Work?</h3>
+        <p style="color:var(--text-2);font-size:.9rem;">Publisher adds code to their site → Google displays targeted ads → Visitors click ads → Publisher earns money. Google AdSense works on a <strong>cost-per-click and revenue-sharing basis</strong>. Publishers get a share of the advertiser bid (Traffic Acquisition Cost — TAC).</p>
+      </div>
+      <div class="card">
+        <div style="font-size:2rem;margin-bottom:.75rem;">🎯</div>
+        <h3 style="font-weight:700;margin-bottom:.5rem;">Scope of This Estimate</h3>
+        <p style="color:var(--text-2);font-size:.9rem;">Third-party websites only — NOT Google properties like YouTube or Search. We estimate the entire AdSense gross revenue including the publisher's TAC share, for one year.</p>
+      </div>
+    </div>
+    <figure style="margin-top:1.5rem;">
+      <img src="https://d2beiqkhq929f0.cloudfront.net/public_assets/assets/000/233/870/original/ChatGPT_Image_Sep_18__2026__04_16_09_PM.png?1789728376" alt="AdSense overview">
+    </figure>
+  </section>
+
+  <!-- TERMINOLOGY -->
+  <section id="terms">
+    <div class="section-label">📖 Terminology</div>
+    <div class="section-title">CPC, CPM & CTR — The Three Core Metrics</div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.25rem;margin-bottom:1.5rem;">
+      <div class="card" style="border-top:4px solid var(--primary);">
+        <div class="tag tag-purple" style="margin-bottom:.5rem;">CPC</div>
+        <h3 style="font-weight:700;margin-bottom:.5rem;">Cost Per Click</h3>
+        <p style="color:var(--text-2);font-size:.88rem;margin-bottom:.75rem;">Advertisers pay per click on their ad. If CPC = $0.10 and users click 1,000 times → advertiser billed $100.</p>
+        <div style="background:var(--primary-light);border-radius:var(--radius-sm);padding:.75rem;font-size:.8rem;color:var(--primary-dark);">
+          <strong>Lower CPC achieved by:</strong> Higher Quality Score, better ad relevance, strong landing page experience
+        </div>
+      </div>
+      <div class="card" style="border-top:4px solid var(--blue);">
+        <div class="tag tag-blue" style="margin-bottom:.5rem;">CPM</div>
+        <h3 style="font-weight:700;margin-bottom:.5rem;">Cost Per Mille (1,000 Impressions)</h3>
+        <p style="color:var(--text-2);font-size:.88rem;margin-bottom:.75rem;">Advertisers pay per 1,000 ad views — regardless of whether users click. Primary alternative to CPC for impression-based campaigns.</p>
+        <div style="background:var(--blue-bg);border-radius:var(--radius-sm);padding:.75rem;font-size:.8rem;color:var(--blue);">
+          <strong>Cost per impression</strong> = CPM ÷ 1,000
+        </div>
+      </div>
+      <div class="card" style="border-top:4px solid var(--green);">
+        <div class="tag tag-green" style="margin-bottom:.5rem;">CTR</div>
+        <h3 style="font-weight:700;margin-bottom:.5rem;">Click-Through Rate</h3>
+        <p style="color:var(--text-2);font-size:.88rem;margin-bottom:.75rem;">% of ad impressions that result in a click. Connects impressions to clicks in the revenue calculation.</p>
+        <div style="background:var(--green-bg);border-radius:var(--radius-sm);padding:.75rem;font-size:.8rem;color:var(--green);">
+          CTR = Clicks ÷ Impressions × 100%
+        </div>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">🔗</div>
+      <div class="callout-body"><strong>Interactive Visualization:</strong> <a href="https://dsml-vizs.vercel.app/pa-7/cpc-cpm-ctr-interrelationship-funnel-flow-pipe-diagram/" target="_blank" style="color:var(--primary);">CPC-CPM-CTR Interrelationship Funnel →</a></div>
+    </div>
+
+    <div class="quiz-block">
+      <div class="quiz-header">🧠 Quiz — CPC, CPM & CTR</div>
+      <div class="quiz-body">
+        <div class="quiz-q">A publisher's page receives 200,000 impressions per day. CTR = 0.5%, CPC = $0.40. How much does the publisher earn from click ads in one day?</div>
+        <div class="quiz-options" id="q1-options">
+          <button class="quiz-option" onclick="handleQuiz(this,'q1','wrong')"><span class="option-letter">A</span>$100</button>
+          <button class="quiz-option" onclick="handleQuiz(this,'q1','wrong')"><span class="option-letter">B</span>$200</button>
+          <button class="quiz-option" onclick="handleQuiz(this,'q1','correct')"><span class="option-letter">C</span>$400</button>
+          <button class="quiz-option" onclick="handleQuiz(this,'q1','wrong')"><span class="option-letter">D</span>$800</button>
+        </div>
+        <div class="quiz-explain" id="q1-explain">
+          <strong>✅ Correct! Answer: C — $400</strong><br>
+          Clicks = 200,000 × 0.5% = <strong>1,000 clicks</strong><br>
+          Revenue = 1,000 × $0.40 = <strong>$400</strong><br>
+          This mirrors the exact CPC × CTR × Impressions calculation you'll use in the BCG estimation tree.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6-STEP FRAMEWORK -->
+  <section id="framework">
+    <div class="section-label">🚀 The Framework</div>
+    <div class="section-title">The 6-Step BCG Guesstimate Approach</div>
+    <div class="section-sub">Every step maps directly to what BCG interviewers are watching for.</div>
+
+    <figure>
+      <img src="https://d2beiqkhq929f0.cloudfront.net/public_assets/assets/000/233/872/original/ChatGPT_Image_Sep_18__2026__04_18_29_PM.png?1789728516" alt="6-step guesstimate framework">
+    </figure>
+
+    <div class="steps-flow">
+      <div class="step-card">
+        <div class="step-number">1</div>
+        <h4>Ask Questions</h4>
+        <p>Clarify all doubts and get a clear understanding of the problem before touching any numbers.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-number">2</div>
+        <h4>High Level</h4>
+        <p>Come up with the master formula — the top-level equation that the whole estimation flows from.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-number">3</div>
+        <h4>State Assumptions</h4>
+        <p>Say them aloud so the interviewer can correct you. "I'll assume the NYT has ~10M daily subscribers."</p>
+      </div>
+      <div class="step-card">
+        <div class="step-number">4</div>
+        <h4>Estimation Tree</h4>
+        <p>A tree map from the top formula down to every leaf variable — makes your logic fully transparent.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-number">5</div>
+        <h4>Bottom-Up</h4>
+        <p>Start calculations from the leaf nodes and aggregate upward to the final number.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-number">6</div>
+        <h4>Sanity Check</h4>
+        <p>Cross-check against a known benchmark. Explain any discrepancy — this shows maturity of thinking.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CLARIFYING QUESTIONS -->
+  <section id="clarify">
+    <div class="section-label">❓ Step 1 — Clarify</div>
+    <div class="section-title">Asking Clarifying Questions</div>
+    <div class="section-sub">Scoring in BCG interviews starts here — not when you first write a number.</div>
+
+    <div class="interview-frame">
+      <div class="interview-header">
+        <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+        <div class="interview-title">BCG Interview Room — Aditi's Clarifying Questions</div>
+      </div>
+      <div class="interview-body">
+        <div class="qa-item">
+          <div class="qa-q"><span class="qa-tag">Q1</span>AdSense is only for third-party websites — not Google properties like YouTube, correct?</div>
+          <div class="qa-a">✅ Yes. It does not include Google properties like YouTube, etc.</div>
+        </div>
+        <div class="qa-item">
+          <div class="qa-q"><span class="qa-tag">Q2</span>AdSense enables publishers to offer ad space, allowing marketers to bid for those spaces?</div>
+          <div class="qa-a">✅ Yes.</div>
+        </div>
+        <div class="qa-item">
+          <div class="qa-q"><span class="qa-tag">Q3</span>Publishers get a share of the bid — should the estimate exclude this share (TAC)?</div>
+          <div class="qa-a">✅ No. Estimate the entire AdSense revenue <em>including</em> the publisher's share (Traffic Acquisition Cost).</div>
+        </div>
+        <div class="qa-item">
+          <div class="qa-q"><span class="qa-tag">Q4</span>Should I assume this to be a one-year estimate?</div>
+          <div class="qa-a">✅ Yes.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rw-box" style="margin-top:1rem;">
+      <strong>🌍 Real-World Context</strong>
+      In actual BCG/McKinsey/Bain interviews, clarifying questions are scored directly. Interviewers check whether you: define scope correctly (third-party only), understand revenue ownership (full gross, not net of TAC), and lock down the time horizon before diving in. Rushing into estimation without these answers is a red flag.
+    </div>
+
+    <div class="quiz-block">
+      <div class="quiz-header">🧠 Quiz — Scoping in Guesstimates</div>
+      <div class="quiz-body">
+        <div class="quiz-q">A BCG interviewer asks you to "estimate Google's AdSense revenue." Which clarifying question is MOST critical before you begin?</div>
+        <div class="quiz-options" id="q2-options">
+          <button class="quiz-option" onclick="handleQuiz(this,'q2','wrong')"><span class="option-letter">A</span>Should I include AdSense from mobile apps only?</button>
+          <button class="quiz-option" onclick="handleQuiz(this,'q2','correct')"><span class="option-letter">B</span>Should I estimate gross revenue including publisher share, or net revenue?</button>
+          <button class="quiz-option" onclick="handleQuiz(this,'q2','wrong')"><span class="option-letter">C</span>Should I include YouTube and Google Search ad revenue?</button>
+          <button class="quiz-option" onclick="handleQuiz(this,'q2','wrong')"><span class="option-letter">D</span>Should I account for Google's operating expenses?</button>
+        </div>
+        <div class="quiz-explain" id="q2-explain">
+          <strong>✅ Correct! Answer: B</strong><br>
+          The gross/net distinction changes your estimate dramatically — TAC can be 70%+ of gross for some publishers. Option C is already handled by the "third-party websites only" scope from Q1. Option D is outside a revenue estimation entirely. Option A is far too narrow to materially change approach.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ESTIMATION TREE -->
+  <section id="estimation">
+    <div class="section-label">🌳 Steps 2–4 — Build the Tree</div>
+    <div class="section-title">Assumptions & Estimation Tree</div>
+
+    <div class="card" style="margin-bottom:1.5rem;">
+      <h3 style="font-weight:700;margin-bottom:.75rem;">📐 The Master Formula</h3>
+      <figure>
+        <img src="https://d2beiqkhq929f0.cloudfront.net/public_assets/assets/000/233/880/original/ChatGPT_Image_Sep_18__2026__04_22_01_PM.png?1789728727" alt="Master formula breakdown">
+      </figure>
+      <div class="formula-box">
+        Ad Revenue = # Publishers × Daily Revenue per Publisher × 365 days
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:1.5rem;">
+      <h3 style="font-weight:700;margin-bottom:.75rem;">🎯 The 20/80 Rule — Pareto Principle</h3>
+      <p style="color:var(--text-2);margin-bottom:1rem;">Based on general knowledge: the top 100 online publishers range from The New York Times (~10M daily subscribers) to niche publishers like Popular Mechanics (~10,000 monthly readers).</p>
+      <div class="callout tip">
+        <div class="callout-icon">⚡</div>
+        <div class="callout-body"><strong>The key assumption:</strong> 20% of the top publishers are likely generating 80% of AdSense revenue. We estimate for the <strong>top 20 out of 100 publishers</strong> and scale up at the end — so our estimate represents 80% of the total.</div>
+      </div>
+      <div class="rw-box">
+        <strong>🌍 Pareto Everywhere</strong>
+        The 20/80 rule appears constantly in product analytics: 20% of features drive 80% of usage; 20% of customers generate 80% of revenue; 20% of publishers generate 80% of AdSense revenue. Using this signals to the interviewer that you think in distributions, not flat averages.
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 style="font-weight:700;margin-bottom:1rem;">🌳 The Complete Estimation Tree (Built Level by Level)</h3>
+
+      <div class="tree-container">
+        <div class="tree-level">
+          <div class="tree-node">Total AdSense Revenue / Year</div>
+        </div>
+        <div class="tree-connector">= 80% of total from top 20 publishers → divide by 0.8 at end</div>
+        <div class="tree-level">
+          <div class="tree-node level2">20 Publishers × Avg Revenue/Day × 365 Days</div>
+        </div>
+        <div class="tree-connector">↓ decompose "revenue per day"</div>
+        <div class="tree-level">
+          <div class="tree-node level3">Click Ads Revenue/Day</div>
+          <div class="tree-node level3">+ Impression Ads Revenue/Day</div>
+        </div>
+        <div class="tree-connector">↓ decompose each</div>
+        <div class="tree-level">
+          <div class="tree-node leaf"># Visitors/Day × Click Ads Seen × CTR × CPC</div>
+          <div class="tree-node leaf"># Visitors/Day × Impression Ads Seen × CPM/1000</div>
+        </div>
+        <div class="tree-connector">↓ decompose "ads seen per visitor"</div>
+        <div class="tree-level">
+          <div class="tree-node leaf">Pages/Day × Ads/Page × 50% click ads</div>
+          <div class="tree-node leaf">Pages/Day × Ads/Page × 50% impression ads</div>
+        </div>
+      </div>
+
+      <div class="callout info" style="margin-top:1rem;">
+        <div class="callout-icon">🔗</div>
+        <div class="callout-body"><strong>Interactive Visualization:</strong> <a href="https://dsml-vizs.vercel.app/pa-7/estimation-tree-construction-step-by-step-growing-tree/" target="_blank" style="color:var(--primary);">Estimation Tree — Step-by-Step Growing Tree →</a></div>
+      </div>
+
+      <figure style="margin-top:1rem;">
+        <img src="https://d2beiqkhq929f0.cloudfront.net/public_assets/assets/000/233/891/original/ChatGPT_Image_Sep_18__2026__04_31_50_PM.png?1789729347" alt="Complete estimation tree">
+        <figcaption>The complete 4-level estimation tree</figcaption>
+      </figure>
+    </div>
+
+    <div class="quiz-block" style="margin-top:1.5rem;">
+      <div class="quiz-header">🧠 Quiz — Estimation Tree Structure</div>
+      <div class="quiz-body">
+        <div class="quiz-q">Which formula correctly captures click ads revenue per day?</div>
+        <div class="quiz-options" id="q3-options">
+          <button class="quiz-option" onclick="handleQuiz(this,'q3','wrong')"><span class="option-letter">A</span># Publishers × Pages Visited × CTR × CPC</button>
+          <button class="quiz-option" onclick="handleQuiz(this,'q3','correct')"><span class="option-letter">B</span># Visitors × # Click Ads Seen × CTR × CPC</button>
+          <button class="quiz-option" onclick="handleQuiz(this,'q3','wrong')"><span class="option-letter">C</span># Visitors × CPM/1000 × % Click Ads</button>
+          <button class="quiz-option" onclick="handleQuiz(this,'q3','wrong')"><span class="option-letter">D</span># Pages Visited × # Ads Per Page × CPC</button>
+        </div>
+        <div class="quiz-explain" id="q3-explain">
+          <strong>✅ Correct! Answer: B</strong><br>
+          Click revenue follows: who visits (# visitors) → how many click ads they see → what % they click (CTR) → what each click is worth (CPC). Option A incorrectly places # publishers at the leaf level. Option C mixes CPM (impression metric) into click revenue. Option D skips CTR entirely.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BOTTOM-UP CALCULATION -->
+  <section id="calc">
+    <div class="section-label">🔢 Step 5 — Bottom-Up</div>
+    <div class="section-title">Assigning Numbers & Calculating</div>
+    <div class="section-sub">Aditi uses herself as the proxy "average NYT reader."</div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1.25rem;margin-bottom:1.5rem;">
+      <div class="card">
+        <h3 style="font-weight:700;margin-bottom:1rem;color:var(--primary);">🖱️ Click Ads — Leaf Nodes</h3>
+        <table class="calc-table" style="width:100%;">
+          <tr><td>Pages visited / day</td><td class="value">= 10</td></tr>
+          <tr><td>Ads per page</td><td class="value">= 5</td></tr>
+          <tr><td>% that are click ads</td><td class="value">= 50% (0.5)</td></tr>
+          <tr class="result-row"><td>Click ads seen / visitor / day</td><td class="value">= 10 × 5 × 0.5 = 25</td></tr>
+        </table>
+        <div style="margin-top:.75rem;font-size:.82rem;color:var(--text-2);">Source: Typical NYT reader — ~30 min morning + breaks, ~10 articles/day; ~5 ads/page observed.</div>
+      </div>
+      <div class="card">
+        <h3 style="font-weight:700;margin-bottom:1rem;color:var(--blue);">👁️ Impression Ads — Leaf Nodes</h3>
+        <table class="calc-table" style="width:100%;">
+          <tr><td>Pages visited / day</td><td class="value">= 10</td></tr>
+          <tr><td>Ads per page</td><td class="value">= 5</td></tr>
+          <tr><td>% that are impression ads</td><td class="value">= 50% (0.5)</td></tr>
+          <tr class="result-row"><td>Impression ads seen / visitor / day</td><td class="value">= 10 × 5 × 0.5 = 25</td></tr>
+        </table>
+        <div style="margin-top:.75rem;font-size:.82rem;color:var(--text-2);">Same as click ads — the other 50% of the 50 ads seen per day.</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1.25rem;margin-bottom:1.5rem;">
+      <div class="card">
+        <h3 style="font-weight:700;margin-bottom:1rem;color:var(--primary);">🖱️ Click Ad Revenue / Publisher / Day</h3>
+        <table class="calc-table">
+          <tr><td># Visitors/day (avg across top 20)</td><td class="value">= 5,000,000</td></tr>
+          <tr><td>Click ads seen per visitor</td><td class="value">= 25</td></tr>
+          <tr><td>CTR (common digital display avg)</td><td class="value">= 0.5% (0.005)</td></tr>
+          <tr><td>CPC (common average)</td><td class="value">= $0.50</td></tr>
+          <tr class="result-row"><td>Click ad revenue / publisher / day</td><td class="value">= 5M × 25 × 0.005 × $0.50 = $312,500 ≈ $0.3M</td></tr>
+        </table>
+        <div style="margin-top:.75rem;font-size:.82rem;color:var(--text-2);">Range 1M–10M, no other data point → average = 5M visitors/publisher.</div>
+      </div>
+      <div class="card">
+        <h3 style="font-weight:700;margin-bottom:1rem;color:var(--blue);">👁️ Impression Ad Revenue / Publisher / Day</h3>
+        <table class="calc-table">
+          <tr><td># Visitors/day</td><td class="value">= 5,000,000</td></tr>
+          <tr><td>Impression ads seen per visitor</td><td class="value">= 25</td></tr>
+          <tr><td>CPM (avg display)</td><td class="value">= $1.00</td></tr>
+          <tr><td>Cost per impression (CPM ÷ 1000)</td><td class="value">= $0.001</td></tr>
+          <tr class="result-row"><td>Impression revenue / publisher / day</td><td class="value">= 5M × 25 × $0.001 = $125,000 ≈ $0.13M</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="card" style="border-top:4px solid var(--primary);">
+      <h3 style="font-weight:700;margin-bottom:1rem;">📊 Final Rollup to Annual Revenue</h3>
+      <table class="calc-table">
+        <tr><td>Click ads revenue / publisher / day</td><td class="value">= $0.30M</td></tr>
+        <tr><td>Impression ads revenue / publisher / day</td><td class="value">= $0.13M</td></tr>
+        <tr><td>Total ad revenue / publisher / day</td><td class="value">= $0.43M ≈ $0.4M</td></tr>
+        <tr><td>Top 20 publishers × $0.4M × 365 days</td><td class="value">= $2.92B</td></tr>
+        <tr><td>This $2.92B = 80% of total (Pareto rule)</td><td class="value">÷ 0.8</td></tr>
+        <tr class="result-row"><td>Total AdSense Revenue (100%)</td><td class="value">≈ $3.6 Billion / year</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <!-- SANITY CHECK -->
+  <section id="sanity">
+    <div class="section-label">✅ Step 6 — Sanity Check</div>
+    <div class="section-title">Cross-Checking Against Alphabet's 10K</div>
+    <div class="section-sub">The most underrated part of a guesstimate — and where Aditi demonstrates real analytical maturity.</div>
+
+    <div class="sanity-grid">
+      <div class="sanity-card estimate">
+        <div class="amount">$3.6B</div>
+        <div class="label">Our initial estimate</div>
+      </div>
+      <div class="sanity-card actual">
+        <div class="amount">$17B</div>
+        <div class="label">Alphabet 10K (Google Network Members)</div>
+      </div>
+      <div class="sanity-card revised">
+        <div class="amount">~$16B</div>
+        <div class="label">Our revised estimate after fix</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:1.5rem;">
+      <h3 style="font-weight:700;margin-bottom:.75rem;">🔍 Finding the Error — Subscriber vs. Total Traffic</h3>
+      <p style="color:var(--text-2);margin-bottom:1rem;">Our estimate of $3.6B is off by a factor of ~4.7 (17 ÷ 3.6). What went wrong?</p>
+
+      <div class="callout warn">
+        <div class="callout-icon">⚠️</div>
+        <div class="callout-body"><strong>Root Cause:</strong> We assumed daily visitors = subscribers only. In reality, the majority of people who visit these publishers are non-paying visitors — they read without subscribing.</div>
+      </div>
+
+      <div style="margin-top:1rem;padding:1rem;background:var(--surface-2);border-radius:var(--radius-sm);">
+        <p style="font-weight:600;margin-bottom:.5rem;">The Correction:</p>
+        <p style="color:var(--text-2);font-size:.9rem;">Non-subscriber : subscriber ratio ≈ <strong>3:1</strong> → For every 1 subscriber, 3 non-paying visitors read the same content. Total traffic = 4× subscriber count.</p>
+        <div class="formula-box" style="font-size:1rem;margin-top:.75rem;">
+          Old: 5M visitors/day &nbsp;→&nbsp; Revised: 5M × 4 = <strong>20M visitors/day</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="cheat-sheet" style="margin-top:1.5rem;">
+      <div class="comment"># REVISED CALCULATION WITH 20M VISITORS</div>
+      <br>
+      <div><span class="highlight">Click ads</span>: 20M × 25 × 0.005 × $0.50 = <span class="value">$1.25M/day/publisher</span></div>
+      <div><span class="highlight">Impression ads</span>: 20M × 25 × $0.001 = <span class="value">$0.50M/day/publisher</span></div>
+      <div><span class="highlight">Total</span>: $1.75M/day/publisher</div>
+      <br>
+      <div><span class="formula">20 publishers × $1.75M × 365 days = $12.8B</span></div>
+      <div><span class="formula">$12.8B ÷ 0.8 (Pareto scaling) = ~$16B</span></div>
+      <br>
+      <div class="comment"># Actual (Alphabet 10K): $17B → Error: &lt;6% ✅</div>
+    </div>
+
+    <div class="rw-box" style="margin-top:1rem;">
+      <strong>🌍 Why Sanity Check Matters to BCG</strong>
+      BCG, McKinsey, and Bain interviewers often give partial or full marks to candidates who: (1) Arrive at a wrong number AND catch it in the sanity check, (2) Correctly identify which assumption drove the error, (3) Demonstrate they can self-correct in real time. Aditi's revised $16B vs. the actual $17B is a &lt;6% miss — excellent for a back-of-envelope estimate with no data.
+    </div>
+
+    <div class="quiz-block" style="margin-top:1.5rem;">
+      <div class="quiz-header">🧠 Quiz — Sanity Check & Assumption Correction</div>
+      <div class="quiz-body">
+        <div class="quiz-q">Your guesstimate of AdSense revenue is $3.6B, but the reported figure is $17B. Which single assumption change would bring your estimate closest to the actual value?</div>
+        <div class="quiz-options" id="q4-options">
+          <button class="quiz-option" onclick="handleQuiz(this,'q4','wrong')"><span class="option-letter">A</span>Increase CPC from $0.50 to $2.00</button>
+          <button class="quiz-option" onclick="handleQuiz(this,'q4','wrong')"><span class="option-letter">B</span>Increase the number of publishers from 20 to 80</button>
+          <button class="quiz-option" onclick="handleQuiz(this,'q4','correct')"><span class="option-letter">C</span>Change daily visitors per publisher from 5M to 20M (non-subscribers outnumber subscribers 3:1, so total traffic is 4× subscriber traffic)</button>
+          <button class="quiz-option" onclick="handleQuiz(this,'q4','wrong')"><span class="option-letter">D</span>Change CPM from $1 to $4</button>
+        </div>
+        <div class="quiz-explain" id="q4-explain">
+          <strong>✅ Correct! Answer: C</strong><br>
+          The discrepancy is ~4.7×. Since visitors appear in BOTH click and impression revenue formulas, a 4× increase in visitors multiplies total revenue by 4×, reaching ~$14–16B. Options A and D affect only one revenue stream and the multiplier would need to be much higher to reach $17B alone. Option B contradicts the 20/80 rule.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SUMMARY -->
+  <section id="summary">
+    <div class="section-label">🏁 Summary</div>
+    <div class="section-title">Today's Journey — One Arc</div>
+
+    <figure style="margin-bottom:1.5rem;">
+      <img src="https://d2beiqkhq929f0.cloudfront.net/public_assets/assets/000/233/894/original/ChatGPT_Image_Sep_18__2026__04_34_18_PM.png?1789729486" alt="Lecture summary arc">
+    </figure>
+
+    <div class="revision-grid">
+      <div class="revision-item">
+        <h4>🎯 AdSense & Terminology</h4>
+        <p>Understood the product (third-party websites only), and the three key metrics: CPC (cost per click), CPM (cost per 1,000 impressions), CTR (click-through rate).</p>
+      </div>
+      <div class="revision-item">
+        <h4>❓ Clarifying Questions</h4>
+        <p>Locked scope (3rd party only), revenue definition (gross incl. TAC), and time horizon (1 year) — before writing a single number.</p>
+      </div>
+      <div class="revision-item">
+        <h4>🌳 Estimation Tree</h4>
+        <p>Built 4-level tree: Total → Publisher/Day → Click + Impression → Leaf assumptions. Applied 20/80 Pareto rule for scope.</p>
+      </div>
+      <div class="revision-item">
+        <h4>🔢 Bottom-Up Math</h4>
+        <p>Calculated $0.3M/day (click) + $0.13M/day (impression) = $0.4M/day per publisher → 20 publishers × 365 days = $2.92B, which is 80% of the total → Full estimate = $2.92B ÷ 0.8 ≈ $3.6B.</p>
+      </div>
+      <div class="revision-item">
+        <h4>✅ Sanity Check</h4>
+        <p>Caught 4.7× underestimation — root cause: assumed subscribers only, not total traffic. Correction: non-subscriber:subscriber = 3:1 → 4× more traffic → Revised estimate ~$16B (vs. $17B actual).</p>
+      </div>
+      <div class="revision-item">
+        <h4>💡 Key Takeaway</h4>
+        <p>A guesstimate isn't about being right the first time — it's about catching and explaining your errors. Self-correction in the sanity check is what impresses BCG interviewers most.</p>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+  // Quiz handler
+  function handleQuiz(btn, qId, result) {
+    const options = document.querySelectorAll(`#${qId}-options .quiz-option`);
+    options.forEach(o => o.disabled = true);
+    btn.classList.add(result === 'correct' ? 'correct' : 'wrong');
+    if (result === 'wrong') {
+      options.forEach(o => {
+        if (o.getAttribute('onclick')?.includes("'correct'")) {
+          o.classList.add('revealed');
+        }
+      });
+    }
+    const explain = document.getElementById(`${qId}-explain`);
+    if (explain) explain.classList.add('show');
+  }
+
+  // Nav active state
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(l => l.classList.remove('active'));
+        const active = document.querySelector(`.nav-links a[href="#${entry.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
+
+</body></html>
